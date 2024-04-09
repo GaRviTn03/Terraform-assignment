@@ -103,8 +103,8 @@ resource "aws_sfn_state_machine" "file_processing" {
       "Parameters": {
         "TableName": "${aws_dynamodb_table.table_db.name}",
         "Item": {
-          "${var.file_name_key}": {
-            "S.$": "$.${var.file_name_key} || 'default_value'"
+          "FileName": {
+            "S.$": "$.Records[0].s3.object.key"
           }
         }
       },
@@ -123,6 +123,15 @@ resource "aws_dynamodb_table" "table_db" {
     name = "FileName"
     type = "S"
   }
+}
+
+# Permission for S3 to invoke Lambda function
+resource "aws_lambda_permission" "allow_terraform_bucket" {
+  statement_id  = "AllowExecutionFromS3Bucket"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.file_lambda.arn
+  principal     = "s3.amazonaws.com"
+  source_arn    = aws_s3_bucket.test_bucket.arn
 }
 
 output "s3_bucket_name" {
