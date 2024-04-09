@@ -7,7 +7,7 @@ def handler(event, context):
     key = event['Records'][0]['s3']['object']['key']
 
     stepfunctions_endpoint_url = 'http://localhost:4566'
-    dynamodb_endpoint_url = 'http://localhost:4566'
+    
 
     # Creating a StepFunctions client
     stepfunctions_client = boto3.client('stepfunctions', endpoint_url=stepfunctions_endpoint_url)
